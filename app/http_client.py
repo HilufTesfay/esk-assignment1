@@ -15,21 +15,11 @@ class Client:
     def refresh_oauth2(self) -> None:
         self.oauth2_token = OAuth2Token(access_token="fresh-token", expires_at=10**10)
 
-    def request(
-        self,
-        method: str,
-        path: str,
-        *,
-        api: bool = False,
-        headers: Optional[Dict[str, str]] = None,
-    ) -> Dict[str, Any]:
-        if headers is None:
-            headers = {}
-
+    def request(self, method: str, path: str, *, api: bool = False, headers: Optional[Dict[str, str]] = None, ) -> Dict[str, Any]:
+        headers = headers.copy() if headers is not None else {}
         if api:
-            if not self.oauth2_token or (
-                isinstance(self.oauth2_token, OAuth2Token) and self.oauth2_token.expired
-            ):
+          
+            if not isinstance(self.oauth2_token, OAuth2Token) or self.oauth2_token.expired:
                 self.refresh_oauth2()
 
             if isinstance(self.oauth2_token, OAuth2Token):
