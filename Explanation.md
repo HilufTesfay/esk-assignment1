@@ -14,6 +14,7 @@
 - Bug: `token_from_iso` produced different epoch values depending on server timezone for a "Z" timestamp.
 - Cause: Naive/aware handling let `.timestamp()` apply local offsets.
 - Fix: Force UTC-aware datetime before converting to epoch.
+## Bug 4: 
 
 ## Note on Validation Logic
 Input validation (eg, malformed strings or empty fields) is excluded from this scope. 

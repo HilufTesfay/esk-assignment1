@@ -18,13 +18,21 @@ class Client:
     def request(self, method: str, path: str, *, api: bool = False, headers: Optional[Dict[str, str]] = None, ) -> Dict[str, Any]:
         headers = headers.copy() if headers is not None else {}
         if api:
-          
+            if isinstance(self.oauth2_token, dict):
+                access_token = self.oauth2_token.get("access_token")
+                expires_at = self.oauth2_token.get("expires_at")
+                if isinstance(access_token, str) and isinstance(expires_at, (int, float)):
+                    self.oauth2_token = OAuth2Token(
+                        access_token=access_token,
+                        expires_at=int(expires_at),
+                    )
             if not isinstance(self.oauth2_token, OAuth2Token) or self.oauth2_token.expired:
                 self.refresh_oauth2()
 
             if isinstance(self.oauth2_token, OAuth2Token):
                 headers["Authorization"] = self.oauth2_token.as_header()
 
+            
         req = requests.Request(method=method, url=f"https://example.com{path}", headers=headers)
         prepared = self.session.prepare_request(req)
 

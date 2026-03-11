@@ -1,7 +1,6 @@
 import time
-
+from datetime import datetime, timezone, timedelta
 import requests
-
 from app.http_client import Client
 from app.tokens import OAuth2Token, token_from_iso
 
@@ -43,3 +42,14 @@ def test_api_request_refreshes_when_token_is_dict():
     resp = c.request("GET", "/me", api=True)
 
     assert resp["headers"].get("Authorization") == "Bearer fresh-token"
+
+
+
+def test_request_uses_dict_token_without_refresh():
+    client = Client()
+    expires_at = int((datetime.now(tz=timezone.utc) + timedelta(hours=1)).timestamp())
+    client.oauth2_token = {"access_token": "dict-token", "expires_at": expires_at}
+
+    response = client.request("GET", "/v1/resource", api=True)
+
+    assert response["headers"]["Authorization"] == "Bearer dict-token"
